@@ -11,7 +11,7 @@ using Microsoft.Data.Entity.Utilities;
 
 namespace Microsoft.Framework.DependencyInjection
 {
-    internal static class ServiceProviderExtensions
+    public static class ServiceProviderExtensions
     {
         public static TService TryGetService<TService>([NotNull] this IServiceProvider serviceProvider)
             where TService : class
@@ -30,7 +30,7 @@ namespace Microsoft.Framework.DependencyInjection
             }
         }
 
-        public static object TryGetService([NotNull] this IServiceProvider serviceProvider, Type serviceType)
+        public static object TryGetService([NotNull] this IServiceProvider serviceProvider, [NotNull] Type serviceType)
         {
             Check.NotNull(serviceProvider, nameof(serviceProvider));
             Check.NotNull(serviceType, nameof(serviceType));
@@ -64,7 +64,7 @@ namespace Microsoft.Framework.DependencyInjection
             }
         }
 
-        public static object GetRequiredServiceChecked([NotNull] this IServiceProvider serviceProvider, Type serviceType)
+        public static object GetRequiredServiceChecked([NotNull] this IServiceProvider serviceProvider, [NotNull] Type serviceType)
         {
             Check.NotNull(serviceProvider, nameof(serviceProvider));
             Check.NotNull(serviceType, nameof(serviceType));
