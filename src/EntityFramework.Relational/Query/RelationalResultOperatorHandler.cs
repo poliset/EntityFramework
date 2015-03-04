@@ -9,6 +9,7 @@ using System.Reflection;
 using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Relational.Query.Expressions;
 using Microsoft.Data.Entity.Relational.Query.ExpressionTreeVisitors;
+using Microsoft.Data.Entity.Relational.Query.ResultOperators;
 using Microsoft.Data.Entity.Utilities;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -68,7 +69,8 @@ namespace Microsoft.Data.Entity.Relational.Query
                     { typeof(SingleResultOperator), HandleSingle },
                     { typeof(SkipResultOperator), HandleSkip },
                     { typeof(SumResultOperator), HandleSum },
-                    { typeof(TakeResultOperator), HandleTake }
+                    { typeof(TakeResultOperator), HandleTake },
+                    { typeof(FromSqlResultOperator), HandleFromSql}
                 };
 
         private readonly IResultOperatorHandler _resultOperatorHandler = new ResultOperatorHandler();
@@ -337,6 +339,23 @@ namespace Microsoft.Data.Entity.Relational.Query
             var takeResultOperator = (TakeResultOperator)handlerContext.ResultOperator;
 
             handlerContext.SelectExpression.Limit = takeResultOperator.GetConstantCount();
+
+            return handlerContext.EvalOnServer;
+        }
+
+        private static Expression HandleFromSql(HandlerContext handlerContext)
+        {
+            var sqlExpression = ((FromSqlResultOperator)handlerContext.ResultOperator).SqlExpression;
+
+            var table = handlerContext.SelectExpression.Tables.Last();
+            handlerContext.SelectExpression.RemoveTable(table);
+
+            handlerContext.SelectExpression.AddTable(
+                new RawSqlDerivedTableExpression(
+                    (string)sqlExpression.Value,
+                    table.Alias,
+                    table.QuerySource
+                    ));
 
             return handlerContext.EvalOnServer;
         }

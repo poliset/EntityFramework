@@ -2669,7 +2669,7 @@ namespace Microsoft.Data.Entity.FunctionalTests
             }
         }
 
-        protected static void AssertResults<T>(
+        private static void AssertResults<T>(
             IList<T> l2oItems,
             IList<T> efItems,
             bool assertOrder,

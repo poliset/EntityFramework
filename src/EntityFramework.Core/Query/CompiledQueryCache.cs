@@ -12,17 +12,12 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Query.ExpressionTreeVisitors;
-using Microsoft.Data.Entity.Query.ResultOperators;
 using Microsoft.Data.Entity.Storage;
 using Microsoft.Data.Entity.Utilities;
 using Microsoft.Framework.Cache.Memory;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.StreamedData;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors.TreeEvaluation;
-using Remotion.Linq.Parsing.Structure;
-using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
-using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 
 namespace Microsoft.Data.Entity.Query
 {
@@ -37,12 +32,15 @@ namespace Microsoft.Data.Entity.Query
         }
 
         private readonly IMemoryCache _memoryCache;
+        private readonly QueryParserFactory _queryParserFactory;
 
-        public CompiledQueryCache([NotNull] IMemoryCache memoryCache)
+        public CompiledQueryCache([NotNull] IMemoryCache memoryCache, [NotNull] QueryParserFactory queryParserFactory)
         {
             Check.NotNull(memoryCache, nameof(memoryCache));
+            Check.NotNull(queryParserFactory, nameof(queryParserFactory));
 
             _memoryCache = memoryCache;
+            _queryParserFactory = queryParserFactory;
         }
 
         public virtual TResult Execute<TResult>(
@@ -55,7 +53,7 @@ namespace Microsoft.Data.Entity.Query
             var compiledQuery
                 = GetOrAdd(query, queryContext, dataStore, isAsync: false, compiler: (q, ds) =>
                     {
-                        var queryModel = CreateQueryParser().GetParsedQuery(q);
+                        var queryModel = _queryParserFactory.Create().GetParsedQuery(q);
 
                         var streamedSequenceInfo
                             = queryModel.GetOutputDataInfo() as StreamedSequenceInfo;
@@ -89,7 +87,7 @@ namespace Microsoft.Data.Entity.Query
             var compiledQuery
                 = GetOrAdd(query, queryContext, dataStore, isAsync: true, compiler: (q, ds) =>
                     {
-                        var queryModel = CreateQueryParser().GetParsedQuery(q);
+                        var queryModel = _queryParserFactory.Create().GetParsedQuery(q);
 
                         var executor
                             = CompileQuery(ds, DataStore.CompileAsyncQueryMethod, typeof(TResult), queryModel);
@@ -114,7 +112,7 @@ namespace Microsoft.Data.Entity.Query
             var compiledQuery
                 = GetOrAdd(query, queryContext, dataStore, isAsync: true, compiler: (q, ds) =>
                     {
-                        var queryModel = CreateQueryParser().GetParsedQuery(q);
+                        var queryModel = _queryParserFactory.Create().GetParsedQuery(q);
 
                         var executor
                             = CompileQuery(ds, DataStore.CompileAsyncQueryMethod, typeof(TResult), queryModel);
@@ -344,50 +342,6 @@ namespace Microsoft.Data.Entity.Query
 
                 throw;
             }
-        }
-
-        private static QueryParser CreateQueryParser()
-        {
-            return new QueryParser(
-                new ExpressionTreeParser(
-                    CreateNodeTypeProvider(),
-                    new CompoundExpressionTreeProcessor(new IExpressionTreeProcessor[]
-                        {
-                            new PartialEvaluatingExpressionTreeProcessor(),
-                            new TransformingExpressionTreeProcessor(ExpressionTransformerRegistry.CreateDefault())
-                        })));
-        }
-
-        private static CompoundNodeTypeProvider CreateNodeTypeProvider()
-        {
-            var searchedTypes
-                = typeof(MethodInfoBasedNodeTypeRegistry)
-                    .GetTypeInfo()
-                    .Assembly
-                    .DefinedTypes
-                    .Select(ti => ti.AsType())
-                    .ToList();
-
-            var methodInfoBasedNodeTypeRegistry
-                = MethodInfoBasedNodeTypeRegistry.CreateFromTypes(searchedTypes);
-
-            methodInfoBasedNodeTypeRegistry
-                .Register(AsNoTrackingExpressionNode.SupportedMethods, typeof(AsNoTrackingExpressionNode));
-
-            methodInfoBasedNodeTypeRegistry
-                .Register(IncludeExpressionNode.SupportedMethods, typeof(IncludeExpressionNode));
-
-            methodInfoBasedNodeTypeRegistry
-                .Register(ThenIncludeExpressionNode.SupportedMethods, typeof(ThenIncludeExpressionNode));
-
-            var innerProviders
-                = new INodeTypeProvider[]
-                    {
-                        methodInfoBasedNodeTypeRegistry,
-                        MethodNameBasedNodeTypeRegistry.CreateFromTypes(searchedTypes)
-                    };
-
-            return new CompoundNodeTypeProvider(innerProviders);
         }
     }
 }

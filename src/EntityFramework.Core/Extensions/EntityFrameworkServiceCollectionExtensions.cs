@@ -105,6 +105,7 @@ namespace Microsoft.Framework.DependencyInjection
                 .AddSingleton<StoreGeneratedValuesFactory>()
                 .AddSingleton<EntityEntryMetadataServices>()
                 .AddSingleton<ICompiledQueryCache, CompiledQueryCache>()
+                .AddSingleton<QueryParserFactory>()
                 .AddSingleton<ILoggerFactory, LoggerFactory>()
                 .AddTypeActivator()
                 .AddScoped<KeyPropagator>()

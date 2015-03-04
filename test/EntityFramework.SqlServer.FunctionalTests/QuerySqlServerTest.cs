@@ -3,7 +3,6 @@
 
 using System.Data.SqlClient;
 using System.Linq;
-using Microsoft.Data.Entity.FunctionalTests;
 using Microsoft.Data.Entity.FunctionalTests.TestModels.Northwind;
 using Microsoft.Data.Entity.Relational.FunctionalTests;
 using Microsoft.Data.Entity.Storage;
@@ -1893,9 +1892,7 @@ WHERE ([o].[CustomerID] = 'QUICK' AND [o].[OrderDate] > @__p_0)",
 
             Assert.Equal(
                 @"SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableSimple
-+ @") AS [c]",
+FROM (SELECT * FROM Customers) AS [c]",
                 Sql);
         }
 
@@ -1905,9 +1902,7 @@ FROM ("
 
             Assert.Equal(
                 @"SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableFilter
-+ @") AS [c]",
+FROM (SELECT * FROM Customers WHERE Customers.ContactName LIKE '%z%') AS [c]",
                 Sql);
 
         }
@@ -1917,14 +1912,10 @@ FROM ("
 
             Assert.Equal(
                 @"SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableCachedByQueryFirst
-+ @") AS [c]
+FROM (SELECT * FROM Customers WHERE Customers.City = 'London') AS [c]
 
 SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableCachedByQuerySecond
-+ @") AS [c]",
+FROM (SELECT * FROM Customers WHERE Customers.City = 'Seattle') AS [c]",
                 Sql);
         }
 
@@ -1934,15 +1925,11 @@ FROM ("
 
             Assert.Equal(
                 @"SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableWhereSimpleClosureViaQueryCache
-+ @") AS [c]
+FROM (SELECT * FROM Customers WHERE Customers.ContactName LIKE '%o%') AS [c]
 WHERE [c].[ContactTitle] = @__title_0
 
 SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM ("
-+ customQueryableWhereSimpleClosureViaQueryCache
-+ @") AS [c]
+FROM (SELECT * FROM Customers WHERE Customers.ContactName LIKE '%o%') AS [c]
 WHERE [c].[ContactTitle] = @__title_0",
                 Sql);
         }

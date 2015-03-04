@@ -3,6 +3,7 @@
 
 using JetBrains.Annotations;
 using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Query;
 using Microsoft.Data.Entity.Relational.Migrations;
 using Microsoft.Data.Entity.Relational.Migrations.Infrastructure;
 using Microsoft.Data.Entity.Relational.Query;
@@ -21,13 +22,15 @@ namespace Microsoft.Data.Entity.Relational
         {
             Check.NotNull(builder, nameof(builder));
 
+            ((IAccessor<IServiceCollection>)builder).Service
+                .AddSingleton<QueryParserFactory, RelationalQueryParserFactory>();
+
             ((IAccessor<IServiceCollection>)builder).Service.TryAdd(new ServiceCollection()
                 .AddSingleton<RelationalObjectArrayValueReaderFactory>()
                 .AddSingleton<RelationalTypedValueReaderFactory>()
                 .AddSingleton<ParameterNameGeneratorFactory>()
                 .AddSingleton<ModificationCommandComparer>()
                 .AddSingleton<MigrationIdGenerator>()
-                .AddScoped<RelationalCustomQueryProvider>()
                 .AddScoped<Migrator>()
                 .AddScoped<MigrationAssembly>()
                 .AddScoped(RelationalDataStoreServiceFactories.ModelDifferFactory)

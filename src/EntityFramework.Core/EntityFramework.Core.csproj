@@ -80,6 +80,9 @@
     <Compile Include="..\Shared\LoggingExtensions.cs">
       <Link>Extensions\Internal\LoggingExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\ServiceProviderExtensions.cs">
+      <Link>Utilities\ServiceProviderExtensions.cs</Link>
+    </Compile>
     <Compile Include="ChangeTracking\Internal\ArraySidecar.cs" />
     <Compile Include="ChangeTracking\Internal\ChangeDetector.cs" />
     <Compile Include="ChangeTracking\Internal\KeyPropagator.cs" />
@@ -192,6 +195,7 @@
     <Compile Include="Query\QueryOptimizer.cs" />
     <Compile Include="Query\ExpressionTreeVisitors\QuerySourceTracingExpressionTreeVisitor.cs" />
     <Compile Include="Query\ExpressionTreeVisitors\RequiresMaterializationExpressionTreeVisitor.cs" />
+    <Compile Include="Query\QueryParserFactory.cs" />
     <Compile Include="Query\ResultOperators\IncludeExpressionNode.cs" />
     <Compile Include="Query\ResultOperators\IncludeResultOperator.cs" />
     <Compile Include="Query\QueryBuffer.cs" />
@@ -311,7 +315,6 @@
     <Compile Include="Utilities\Multigraph.cs" />
     <Compile Include="Utilities\PropertyInfoExtensions.cs" />
     <Compile Include="Utilities\ReferenceEqualityComparer.cs" />
-    <Compile Include="Utilities\ServiceProviderExtensions.cs" />
     <Compile Include="Utilities\ThreadSafeDictionaryCache.cs" />
     <Compile Include="Utilities\ThreadSafeLazyRef.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
