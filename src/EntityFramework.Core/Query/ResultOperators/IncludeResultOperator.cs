@@ -7,7 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
-using Microsoft.Data.Entity.Internal;
 using Microsoft.Data.Entity.Utilities;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -16,7 +15,6 @@ using Remotion.Linq.Clauses.StreamedData;
 
 namespace Microsoft.Data.Entity.Query.ResultOperators
 {
-    [QueryAnnotation]
     public class IncludeResultOperator : SequenceTypePreservingResultOperatorBase
     {
         private Expression _navigationPropertyPath;

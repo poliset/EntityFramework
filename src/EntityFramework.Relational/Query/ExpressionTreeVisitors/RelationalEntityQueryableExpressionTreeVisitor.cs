@@ -85,28 +85,24 @@ namespace Microsoft.Data.Entity.Relational.Query.ExpressionTreeVisitors
                 ? tableName.First().ToString().ToLower()
                 : _querySource.ItemName;
 
-            var fromSqlAnnotations = GetAnnotations<FromSqlAnnotation>(_querySource).ToList();
+            var fromSqlAnnotation = GetAnnotations<FromSqlAnnotation>(_querySource).SingleOrDefault();
 
-            switch(fromSqlAnnotations.Count)
+            if(fromSqlAnnotation != null)
             {
-                case 0:
-                    selectExpression.AddTable(
-                        new TableExpression(
-                            tableName,
-                            QueryModelVisitor.QueryCompilationContext.GetSchema(entityType),
-                            alias,
-                            _querySource));
-                    break;
-                case 1:
-                    selectExpression.AddTable(
-                        new RawSqlDerivedTableExpression(
-                            fromSqlAnnotations[0].Sql,
-                            fromSqlAnnotations[0].Parameters,
-                            alias,
-                            _querySource));
-                    break;
-                default:
-                    throw new InvalidOperationException(Strings.MultipleFromSqlCalls);
+                selectExpression.AddTable(
+                    new RawSqlDerivedTableExpression(
+                        fromSqlAnnotation.Sql,
+                        alias,
+                        _querySource));
+            }
+            else
+            {
+                selectExpression.AddTable(
+                    new TableExpression(
+                        tableName,
+                        QueryModelVisitor.QueryCompilationContext.GetSchema(entityType),
+                        alias,
+                        _querySource));
             }
 
             QueryModelVisitor.AddQuery(_querySource, selectExpression);

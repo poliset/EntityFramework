@@ -14,7 +14,6 @@ namespace Microsoft.Data.Entity.Relational.Query.Expressions
     {
         public RawSqlDerivedTableExpression(
             [NotNull] string sql,
-            [NotNull] object[] parameters,
             [NotNull] string alias,
             [NotNull] IQuerySource querySource)
             : base(
@@ -22,15 +21,11 @@ namespace Microsoft.Data.Entity.Relational.Query.Expressions
                   Check.NotEmpty(alias, nameof(alias)))
         {
             Check.NotEmpty(sql, nameof(sql));
-            Check.NotNull(parameters, nameof(parameters));
 
             Sql = sql;
-            Parameters = parameters;
         }
 
         public virtual string Sql { get; }
-
-        public virtual object[] Parameters { get; }
 
         public override Expression Accept([NotNull] ExpressionTreeVisitor visitor)
         {

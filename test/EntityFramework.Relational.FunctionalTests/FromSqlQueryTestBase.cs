@@ -95,27 +95,6 @@ WHERE Customers.City = 'London'"),
             }
         }
 
-        [Fact]
-        public virtual void From_sql_queryable_with_parameters()
-        {
-            AssertQuery<Customer>(
-                cs => cs.FromSql(@"SELECT * FROM Customers WHERE Customers.City = '{0}'", "London"),
-                cs => cs.Where(c => c.City == "London"),
-                entryCount: 6);
-        }
-
-        [Fact]
-        public virtual void Multiple_calls_to_from_sql_throw()
-        {
-            using (var context = CreateContext())
-            {
-                Assert.Equal(
-                    Strings.MultipleFromSqlCalls,
-                    Assert.Throws<InvalidOperationException>(
-                        () => context.Customers.FromSql("X").FromSql("X").ToList()).Message);
-            }
-        }
-
         protected NorthwindContext CreateContext()
         {
             return Fixture.CreateContext();

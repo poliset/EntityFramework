@@ -135,11 +135,10 @@
     <Compile Include="Infrastructure\IBoxedValueReaderSource.cs" />
     <Compile Include="Infrastructure\IDatabaseFactory.cs" />
     <Compile Include="Infrastructure\IDbContextOptions.cs" />
-    <Compile Include="Infrastructure\IDbSetExtender`.cs" />
+    <Compile Include="Infrastructure\IAnnotatableQueryable`.cs" />
     <Compile Include="Infrastructure\IOptionsBuilderExtender.cs" />
     <Compile Include="Infrastructure\EntityFrameworkServicesBuilder.cs" />
     <Compile Include="Infrastructure\IAccessor.cs" />
-    <Compile Include="Internal\QueryAnnotationAttribute.cs" />
     <Compile Include="Internal\DbContextActivator.cs" />
     <Compile Include="Internal\DbContextOptionsParser.cs" />
     <Compile Include="Internal\DbContextServices.cs" />

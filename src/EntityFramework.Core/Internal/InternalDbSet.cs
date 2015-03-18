@@ -16,7 +16,7 @@ using Microsoft.Framework.DependencyInjection;
 namespace Microsoft.Data.Entity.Internal
 {
     public class InternalDbSet<TEntity>
-        : DbSet<TEntity>, IOrderedQueryable<TEntity>, IAsyncEnumerableAccessor<TEntity>, IAccessor<IServiceProvider>, IDbSetExtender<TEntity>
+        : DbSet<TEntity>, IOrderedQueryable<TEntity>, IAsyncEnumerableAccessor<TEntity>, IAccessor<IServiceProvider>, IAnnotatableQueryable<TEntity>
         where TEntity : class
     {
         private readonly DbContext _context;
@@ -34,15 +34,6 @@ namespace Microsoft.Data.Entity.Internal
                 = new LazyRef<EntityQueryable<TEntity>>(
                     () => new EntityQueryable<TEntity>(
                         ((IAccessor<IServiceProvider>)_context).Service.GetRequiredService<EntityQueryProvider>()));
-        }
-
-        private InternalDbSet([NotNull] DbContext context, [NotNull] EntityQueryable<TEntity> entityQueryable)
-        {
-            Check.NotNull(context, nameof(context));
-            Check.NotNull(entityQueryable, nameof(entityQueryable));
-
-            _context = context;
-            _entityQueryable = new LazyRef<EntityQueryable<TEntity>>(() => entityQueryable);
         }
 
         public override EntityEntry<TEntity> Add(TEntity entity)
@@ -143,11 +134,11 @@ namespace Microsoft.Data.Entity.Internal
 
         IServiceProvider IAccessor<IServiceProvider>.Service => ((IAccessor<IServiceProvider>)_context).Service;
 
-        DbSet<TEntity> IDbSetExtender<TEntity>.AnnotateQuery([NotNull] object annotation)
+        IQueryable<TEntity> IAnnotatableQueryable<TEntity>.AnnotateQuery([NotNull] object annotation)
         {
             Check.NotNull(annotation, nameof(annotation));
 
-            return new InternalDbSet<TEntity>(_context, (EntityQueryable<TEntity>)_entityQueryable.Value.AnnotateQuery(annotation));
+            return _entityQueryable.Value.AnnotateQuery(annotation);
         }
     }
 }

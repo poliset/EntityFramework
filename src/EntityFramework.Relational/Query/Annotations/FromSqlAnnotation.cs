@@ -8,18 +8,14 @@ namespace Microsoft.Data.Entity.Relational.Query.Annotations
 {
     public class FromSqlAnnotation
     {
-        public FromSqlAnnotation([NotNull] string sql, [NotNull] params object[] parameters)
+        public FromSqlAnnotation([NotNull] string sql)
         {
             Check.NotEmpty(sql, nameof(sql));
-            Check.NotNull(parameters, nameof(parameters));
 
             Sql = sql;
-            Parameters = parameters;
         }
 
         public virtual string Sql { get; private set; }
-
-        public virtual object[] Parameters { get; private set; }
 
         public override string ToString()
         {

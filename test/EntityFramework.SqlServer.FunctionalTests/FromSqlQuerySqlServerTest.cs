@@ -96,18 +96,6 @@ FROM [Customers] AS [c]",
                 Sql);
         }
 
-        public override void From_sql_queryable_with_parameters()
-        {
-            base.From_sql_queryable_with_parameters();
-
-            Assert.Equal(
-                @"SELECT [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[CustomerID], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
-FROM (
-    SELECT * FROM Customers WHERE Customers.City = 'London'
-) AS [c]",
-                Sql);
-        }
-
         public FromSqlQuerySqlServerTest(NorthwindQuerySqlServerFixture fixture)
             : base(fixture)
         {
